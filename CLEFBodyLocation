@@ -1,0 +1,232 @@
+
+					
+					ArrayList<CLEFList> cfList = new ArrayList<CLEFList>();
+					
+					String inputFileName = listOfFiles[i].getName();  
+					String inputDirFile = "corpus\\" + inputFileName ;
+					String outputFileName = "results\\" + listOfFiles[i].getName().replace("_interim", "_BL");
+										
+					LineNumberReader  lnr2 = new LineNumberReader(new FileReader(new File(inputDirFile)));
+					lnr2.skip(Long.MAX_VALUE);
+					int lineNum2 = lnr2.getLineNumber() ;
+					
+					//This is to read the dictionary of relevant CUI list.			
+					FileInputStream fstream2 = new FileInputStream(inputDirFile);
+					DataInputStream in2 = new DataInputStream(fstream2);
+					BufferedReader br2 = new BufferedReader(new InputStreamReader(in2));
+
+					for (int j = 0 ; j < lineNum2  ; j++) {	
+						
+						String[] data = br2.readLine().replace("|","\t").split("\t"); 
+						System.out.println(checkCharacter2.checkBody(data[5]))	;
+						//this is the process to select the relevant CUI terms from the inputs
+						if (checkCharacter2.checkBody(data[5])) { 
+														
+							cf = new CLEFList();
+							cf.setGrade(data[2]);
+							cf.setTitle(data[3]);
+							cf.setCUI(data[4]);
+							cf.setCategory(data[5]);
+							if (checkCharacter2.checkPeriod(data[8])==0) {
+								String[] span = data[8].split(":");
+								cf.setStart(span[0]);
+								cf.setEnd(span[1]);
+								cfList.add(cf); 
+								
+								//System.out.println(span[0]+"|"+span[1]);
+							} else if (checkCharacter2.checkPeriod(data[8])==1) {
+								String[] span = data[8].split(",");
+								String[] span2 = span[0].split(":");
+								cf.setStart(span2[0]);
+								cf.setEnd(span2[1]);
+								cfList.add(cf); 
+								//System.out.println(span[0]+"|"+span[1]);
+								cf = new CLEFList();
+								cf.setGrade(data[2]);
+								cf.setTitle(data[3]);
+								cf.setCUI(data[4]);
+								cf.setCategory(data[5]);
+								String[] span3 = span[1].split(":");
+								cf.setStart(span3[0]);
+								cf.setEnd(span3[1]);
+								cfList.add(cf); 
+								
+								
+								
+								
+							}
+							//System.out.println(checkCharacter2.checkColon(data[9])+ " i: " + i + " j: " + j + " " + data[9]);
+							System.out.println(j);System.out.println();
+							
+							if ( data.length >9 ) {
+								
+								if ( checkCharacter2.checkColon(data[9]) > 0 ) {
+									
+									cf = new CLEFList();
+									cf.setGrade(data[2]);
+									cf.setTitle(data[3]);
+									cf.setCUI(data[4]);
+									cf.setCategory(data[5]); 
+									if (checkCharacter2.checkPeriod(data[9])==0) {
+										String[] span4 = data[9].split(":");
+										cf.setStart(span4[0]);
+										cf.setEnd(span4[1]);
+										cfList.add(cf); 
+										System.out.println(span4[0]+"|"+span4[1]);  
+									} else if (checkCharacter2.checkPeriod(data[9])==1) { 
+										String[] span5 = data[9].split(",");
+										String[] span6= span5[0].split(":");
+										cf.setStart(span6[0]);
+										cf.setEnd(span6[1]);
+										cfList.add(cf); 
+										System.out.println(span6[0]+"|"+span6[1]);
+										cf = new CLEFList();
+										cf.setGrade(data[2]);
+										cf.setTitle(data[3]);
+										cf.setCUI(data[4]);
+										cf.setCategory(data[5]);
+										String[] span7 = span5[1].split(":");
+										cf.setStart(span7[0]);
+										cf.setEnd(span7[1]);
+										cfList.add(cf); 
+										
+									}
+								}
+								
+							}
+							
+							if ( data.length >10 ) {
+								
+								if ( checkCharacter2.checkColon(data[10]) > 0 ) {
+									
+									cf = new CLEFList();
+									cf.setGrade(data[2]);
+									cf.setTitle(data[3]);
+									cf.setCUI(data[4]);
+									cf.setCategory(data[5]); 
+									if (checkCharacter2.checkPeriod(data[9])==0) {
+										String[] span4 = data[9].split(":");
+										cf.setStart(span4[0]);
+										cf.setEnd(span4[1]);
+										cfList.add(cf); 
+										System.out.println(span4[0]+"|"+span4[1]);  
+									} else if (checkCharacter2.checkPeriod(data[9])==1) { 
+										String[] span5 = data[9].split(",");
+										String[] span6= span5[0].split(":");
+										cf.setStart(span6[0]);
+										cf.setEnd(span6[1]);
+										cfList.add(cf); 
+										System.out.println(span6[0]+"|"+span6[1]);
+										cf = new CLEFList();
+										cf.setGrade(data[2]);
+										cf.setTitle(data[3]);
+										cf.setCUI(data[4]);
+										cf.setCategory(data[5]);
+										String[] span7 = span5[1].split(":");
+										cf.setStart(span7[0]);
+										cf.setEnd(span7[1]);
+										cfList.add(cf); 
+										
+									}
+								}
+								
+							}
+							
+						}//this is the end of checking whether the sting contains relevant CUI
+							
+					}//All the iteration has been ended for processing one input files
+					
+					//this is to save the processing results to the output file
+					Iterator<CLEFList> it = cfList.iterator();
+					while (it.hasNext()) {
+	                     //System.out.println(it.next().toString());
+	                     Util.writeStringToFile(outputFileName, it.next().toString());
+	                     //System.out.println(it.next().toString());
+					}
+					
+				}
+			}//This is the end of opening all input files.
+			
+			
+			
+		}
+		catch (Exception e) {//Catch exception if any
+			System.err.println("Error: " + e.getMessage());			
+		}
+		
+	}
+}
+
+class Utility5 {
+	
+	public static String readFile(String fileName) throws IOException {
+	    BufferedReader br = new BufferedReader(new FileReader(fileName));
+	    try {
+	        StringBuilder sb = new StringBuilder();
+	        String line = br.readLine();
+
+	        while (line != null) {
+	            sb.append(line);
+	            sb.append("\n");
+	            line = br.readLine();
+	        }
+	        return sb.toString();
+	    } finally {
+	        br.close();
+	    }
+	}
+	
+	public static void writeStringToFile(String filePathAndName, String stringToBeWritten) throws IOException{    
+		try
+		{
+			String filename= filePathAndName;
+			boolean append = true;
+			FileWriter fw = new FileWriter(filename,append);
+
+			fw.write(stringToBeWritten);//appends the string to the file
+			//fw.write("\n");
+			fw.close();
+		}
+
+		catch(IOException ioe)
+		{
+			System.err.println("IOException: " + ioe.getMessage());
+		}
+	}
+}
+
+class checkCharacter2 {
+	
+	public static int checkColon(String str) {
+		int count = 0;
+		for(int i =0; i < str.length(); i++) {
+			if(str.charAt(i) == ':') {
+		        count++; 
+			}
+		}    
+		return count;    
+		
+	}
+	public static int checkPeriod(String str) {
+		int count = 0;
+		for(int i =0; i < str.length(); i++) {
+			if(str.charAt(i) == ',') {
+		        count++; 
+			}
+		}    
+		    
+		return count;
+	}
+	
+	public static boolean checkBody(String str) {
+		
+		//System.out.println(str);
+		if (str.toLowerCase().contains("blor")) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	
+	
+}
